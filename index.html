@@ -43,9 +43,9 @@
   .burger{display:none;flex-direction:column;gap:5px;cursor:pointer}
   .burger span{width:24px;height:2px;background:var(--sand)}
 
-  .ticker{position:fixed;top:72px;left:0;right:0;z-index:99;background:var(--cyan);color:var(--ink);overflow:hidden;border-bottom:1px solid var(--ink)}
-  .ticker-track{display:flex;width:max-content;white-space:nowrap;animation:slide 38s linear infinite;padding:.5rem 0;will-change:transform}
-  .ticker-track span{font-family:'Space Mono',monospace;text-transform:uppercase;font-size:.74rem;font-weight:700;letter-spacing:.12em;padding:0 1.4rem;flex:none}
+  .ticker{position:fixed;top:72px;left:0;right:0;z-index:99;background:var(--cyan);color:var(--ink);overflow:hidden;border-bottom:1px solid var(--ink);height:34px;display:flex;align-items:center;transition:top .3s ease}
+  .ticker-track{display:flex;width:max-content;white-space:nowrap;animation:slide 38s linear infinite;will-change:transform}
+  .ticker-track span{font-family:'Space Mono',monospace;text-transform:uppercase;font-size:.72rem;font-weight:700;letter-spacing:.1em;line-height:1;padding:0 1.4rem;flex:none}
   @keyframes slide{0%{transform:translate3d(0,0,0)}100%{transform:translate3d(-50%,0,0)}}
 
   .hero{min-height:100vh;display:flex;align-items:center;position:relative;padding:9rem 6vw 5rem;background:radial-gradient(circle at 78% 28%,rgba(58,160,255,.22),transparent 45%),radial-gradient(circle at 18% 75%,rgba(255,122,89,.16),transparent 45%),radial-gradient(circle at 50% 50%,rgba(31,214,196,.10),transparent 60%),var(--ink)}
@@ -429,7 +429,17 @@
     const t=document.getElementById('ticker');
     if(t){t.innerHTML=t.innerHTML+t.innerHTML;}
   })();
-  window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.scrollY>40)});
+  const tickerEl=document.querySelector('.ticker');
+  function syncTicker(){
+    if(tickerEl) tickerEl.style.top=nav.offsetHeight+'px';
+  }
+  window.addEventListener('scroll',()=>{
+    nav.classList.toggle('scrolled',window.scrollY>40);
+    requestAnimationFrame(syncTicker);
+  });
+  window.addEventListener('resize',syncTicker);
+  window.addEventListener('load',syncTicker);
+  syncTicker();
   const io=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.15});
   document.querySelectorAll('.reveal').forEach((el,i)=>{el.style.transitionDelay=(i%4*0.08)+'s';io.observe(el)});
   document.getElementById('burger').addEventListener('click',()=>{
